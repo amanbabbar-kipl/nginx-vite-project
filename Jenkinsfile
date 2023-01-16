@@ -5,32 +5,35 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '1'))
     }
     environment {
-		DOCKERHUB_CREDENTIALS=credentials('aman-aws-cred')
+		DOCKERHUB_CREDENTIALS=credentials('aman-dockerhub-creds')
+        BUILD_IMAGE='kiplphp38/nginx-vite-project:1.1'
 	}
     stages {
         stage('Build Image') {
             steps {
-                sh 'docker build -t kiplphp38/nginx-vite-project:1.1 .'
+                sh 'docker build -t $BUILD_IMAGE .'
             }
         }
 
         stage('Login') {
             steps {
-                sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW'
+                sh 'docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}'
             }
         }
 
         stage('Push') {
-
 			steps {
-				sh 'docker push kiplphp38/nginx-vite-project:1.1'
+				sh 'docker push $BUILD_IMAGE'
 			}
 		}
     }
 
     post {
 		always {
-			sh 'docker logout'
+			sh '''
+            docker rmi $BUILD_IMAGE
+            docker logout
+            '''
 		}
 	}
 }
