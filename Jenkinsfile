@@ -6,7 +6,7 @@ pipeline {
     }
     
     stages {
-        stage('Build') {
+        stage('Build Image') {
             steps {
                 echo 'Building'
             }
@@ -14,7 +14,11 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'docker -v'
+                sh '''
+                docker -v
+                sleep 1
+                echo $! > .pidfile
+                '''
             }
         }
     }
