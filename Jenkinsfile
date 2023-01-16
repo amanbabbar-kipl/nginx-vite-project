@@ -4,22 +4,33 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '1'))
     }
-    
+    environment {
+		DOCKERHUB_CREDENTIALS=credentials('aman-aws-cred')
+	}
     stages {
         stage('Build Image') {
             steps {
-                echo 'Building'
+                sh 'docker build -t kiplphp38/nginx-vite-project:1.1 .'
             }
         }
 
-        stage('Test') {
+        stage('Login') {
             steps {
-                sh '''
-                docker -v
-                sleep 1
-                echo $! > .pidfile
-                '''
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
+
+        stage('Push') {
+
+			steps {
+				sh 'docker push kiplphp38/nginx-vite-project:1.1'
+			}
+		}
     }
+
+    post {
+		always {
+			sh 'docker logout'
+		}
+	}
 }
