@@ -29,7 +29,7 @@ pipeline {
 
         stage('Cleanup') {
             steps {
-                cleanWs(notFailBuild: true,patterns: [[pattern: '.git/**', type: 'INCLUDE']])
+                cleanWs(notFailBuild: true,patterns: [[pattern: '**/.git/**', type: 'INCLUDE']])
             }
         }
     }
