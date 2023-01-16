@@ -26,6 +26,12 @@ pipeline {
 				sh 'docker push $BUILD_IMAGE'
 			}
 		}
+
+        stage('Cleanup') {
+            steps {
+                cleanWs(notFailBuild: true,patterns: [[pattern: '.git/**', type: 'INCLUDE']])
+            }
+        }
     }
 
     post {
@@ -34,7 +40,6 @@ pipeline {
             docker rmi $BUILD_IMAGE
             docker logout
             '''
-            cleanWs(patterns: [[pattern: '.git/**', type: 'INCLUDE']])
 		}
 	}
 }
