@@ -34,6 +34,7 @@ pipeline {
             docker rmi $BUILD_IMAGE
             docker logout
             '''
+            cleanWs(patterns: [[pattern: '.git/**', type: 'INCLUDE']])
 		}
 	}
 }
